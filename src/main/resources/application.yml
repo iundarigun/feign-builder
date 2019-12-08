@@ -1,0 +1,12 @@
+spring:
+  application:
+    name: Feign-builder
+  cache:
+    cache-names: someHttpClient
+    caffeine:
+      spec: maximumSize=500,expireAfterAccess=600s
+
+feign-builder:
+  client:
+    readTimeout: 2_000
+    connectTimeout: 10_000
