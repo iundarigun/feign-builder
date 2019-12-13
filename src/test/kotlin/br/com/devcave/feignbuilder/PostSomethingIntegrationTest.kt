@@ -1,17 +1,20 @@
 package br.com.devcave.feignbuilder
 
 import br.com.devcave.feignbuilder.decorator.MockServer
+import com.github.tomakehurst.wiremock.client.WireMock
 import com.github.tomakehurst.wiremock.client.WireMock.aResponse
 import com.github.tomakehurst.wiremock.client.WireMock.equalTo
 import com.github.tomakehurst.wiremock.client.WireMock.equalToJson
 import com.github.tomakehurst.wiremock.client.WireMock.get
 import com.github.tomakehurst.wiremock.client.WireMock.post
+import com.github.tomakehurst.wiremock.client.WireMock.postRequestedFor
 import com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo
 import com.github.tomakehurst.wiremock.common.Json
 import io.restassured.RestAssured
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
+import org.mockito.Mockito
 import org.springframework.boot.test.context.SpringBootTest
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -52,6 +55,12 @@ class PostSomethingIntegrationTest {
             .then()
                 .log().all()
                 .statusCode(200)
+
+        WireMock.verify(
+            1,
+            postRequestedFor(urlEqualTo("/my-webhook"))
+                .withRequestBody(equalToJson(""" { "id": 99, "name": "iundarigun" } """))
+        )
     }
 
 }

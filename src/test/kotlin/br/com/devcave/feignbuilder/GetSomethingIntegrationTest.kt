@@ -1,9 +1,11 @@
 package br.com.devcave.feignbuilder
 
 import br.com.devcave.feignbuilder.decorator.MockServer
+import com.github.tomakehurst.wiremock.client.WireMock
 import com.github.tomakehurst.wiremock.client.WireMock.aResponse
 import com.github.tomakehurst.wiremock.client.WireMock.equalTo
 import com.github.tomakehurst.wiremock.client.WireMock.get
+import com.github.tomakehurst.wiremock.client.WireMock.getRequestedFor
 import com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo
 import com.github.tomakehurst.wiremock.client.WireMock.urlMatching
 import com.github.tomakehurst.wiremock.common.Json
@@ -52,6 +54,13 @@ class GetSomethingIntegrationTest {
             .then()
                 .log().all()
                 .statusCode(200)
+
+        WireMock.verify(
+            1,
+            getRequestedFor(urlMatching("/my-webhook(.*)"))
+                .withQueryParam("id", equalTo("99"))
+                .withQueryParam("name", equalTo("iundarigun"))
+        )
     }
 
 }
