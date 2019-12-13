@@ -21,7 +21,7 @@ class FeignService(
     fun getSomeResponseByPost(url: String, someRequest: SomeRequest): List<SomeResponse>? {
         return clientService
             .getClient(url)
-            .getSomething(createHeader(), someRequest)
+            .postSomething(createHeader(), someRequest)
 
     }
 
