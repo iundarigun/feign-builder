@@ -3,9 +3,10 @@ package br.com.devcave.feignbuilder
 import br.com.devcave.feignbuilder.decorator.MockServer
 import com.github.tomakehurst.wiremock.client.WireMock.aResponse
 import com.github.tomakehurst.wiremock.client.WireMock.equalTo
+import com.github.tomakehurst.wiremock.client.WireMock.equalToJson
 import com.github.tomakehurst.wiremock.client.WireMock.get
+import com.github.tomakehurst.wiremock.client.WireMock.post
 import com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo
-import com.github.tomakehurst.wiremock.client.WireMock.urlMatching
 import com.github.tomakehurst.wiremock.common.Json
 import io.restassured.RestAssured
 import org.junit.jupiter.api.AfterEach
@@ -14,7 +15,7 @@ import org.junit.jupiter.api.Test
 import org.springframework.boot.test.context.SpringBootTest
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-class GetSomethingIntegrationTest {
+class PostSomethingIntegrationTest {
 
     private val mockServer: MockServer = MockServer()
 
@@ -29,26 +30,25 @@ class GetSomethingIntegrationTest {
     }
 
     @Test
-    fun testGet() {
+    fun testPost() {
         mockServer.stubFor(
-            get(urlMatching("/my-webhook(.*)"))
-                .withQueryParam("id", equalTo("99"))
-                .withQueryParam("name", equalTo("iundarigun"))
+            post(urlEqualTo("/my-webhook"))
+                .withRequestBody(equalToJson(""" { "id": 99, "name": "iundarigun" } """))
                 .willReturn(
                     aResponse()
                         .withHeader("Content-Type", "application/json")
-                        .withBody(""" [ { "name": "iundarigun", "value": 99 } ] """)
+                        .withBody(""" [ { "value": 99, "name": "iundarigun" } ] """)
                 )
         )
 
         RestAssured
             .given()
                 .log().all()
-                .param("id", 99)
                 .param("name", "iundarigun")
+                .param("id", 99)
                 .param("url", "http://localhost:8888/my-webhook")
             .`when`()
-                .get("/feign")
+                .post("/feign")
             .then()
                 .log().all()
                 .statusCode(200)
